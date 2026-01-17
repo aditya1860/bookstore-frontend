@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -6,15 +6,16 @@ function AdminDashboard() {
   const [books, setBooks] = useState([]);
   const token = localStorage.getItem("token");
 
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     const res = await fetch(`${API_URL}/api/books`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
     const data = await res.json();
     setBooks(data);
-  };
+  }, [token]);
 
   const addBook = async (e) => {
     e.preventDefault();
@@ -54,7 +55,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [fetchBooks]);
 
   return (
     <div style={{ padding: "30px" }}>
@@ -64,7 +65,7 @@ function AdminDashboard() {
         <input name="title" placeholder="Title" required />
         <input name="author" placeholder="Author" required />
         <input name="price" placeholder="Price" required />
-        <button>Add Book</button>
+        <button type="submit">Add Book</button>
       </form>
 
       <hr />
